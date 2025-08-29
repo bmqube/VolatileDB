@@ -1,0 +1,23 @@
+# Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Go coverage
+*.out
+
+# Build output
+volatiledb
+VolatileDB
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
