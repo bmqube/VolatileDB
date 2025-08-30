@@ -50,7 +50,7 @@ func (handler *ConnectionHandler) processRequest(conn net.Conn) error {
 	}
 
 	// println(len(message.Array))
-	// println(message.String())
+	println(message.String())
 	response := handler.executeCommand(message, mb)
 	handler.responseWriter.WriteResponse(conn, response)
 
@@ -71,7 +71,7 @@ func (handler *ConnectionHandler) executeCommand(message models.Message, mb *res
 	executor, ok := handler.commandRegistry.Get(command)
 
 	if !ok {
-		return mb.Error("ERR unknown command " + command + ", with args beginning with: " + command).Build()
+		return mb.Error("ERR unknown command '" + command + "', with args beginning with: '" + command + "'").Build()
 	}
 
 	args := message.Array[1:]
@@ -80,5 +80,5 @@ func (handler *ConnectionHandler) executeCommand(message models.Message, mb *res
 		return mb.Error(err.Error()).Build()
 	}
 
-	return executor.Execute(args, handler.store)
+	return executor.Execute(args, handler.store, mb)
 }

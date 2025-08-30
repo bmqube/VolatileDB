@@ -13,7 +13,7 @@ func Serialize(message models.Message) string {
 	case "error":
 		return fmt.Sprintf("-%s\r\n", message.ErrorMessage)
 	case "bulk_string":
-		if message.BulkString == nil {
+		if message.BulkString == nil || len(message.BulkString) == 0 {
 			return "$-1\r\n"
 		}
 		return fmt.Sprintf("$%d\r\n%s\r\n", len(message.BulkString), string(message.BulkString))

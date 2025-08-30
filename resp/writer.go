@@ -1,14 +1,15 @@
 package resp
 
 import (
-	"net"
+	"fmt"
+	"io"
 
 	"github.com/bmqube/VolatileDB/models"
 )
 
 type ResponseWriter interface {
-	WriteResponse(conn net.Conn, message models.Message)
-	WriteError(conn net.Conn, errorMsg string)
+	WriteResponse(writer io.Writer, message models.Message)
+	WriteError(writer io.Writer, errorMsg string)
 }
 
 type RESPResponseWriter struct{}
@@ -17,11 +18,11 @@ func NewRESPResponseWriter() *RESPResponseWriter {
 	return &RESPResponseWriter{}
 }
 
-func (responseWriter *RESPResponseWriter) WriteResponse(conn net.Conn, message models.Message) {
-	conn.Write([]byte(Serialize(message)))
+func (responseWriter *RESPResponseWriter) WriteResponse(writer io.Writer, message models.Message) {
+	fmt.Print(Serialize(message))
+	fmt.Fprint(writer, Serialize(message))
 }
 
-func (responseWriter *RESPResponseWriter) WriteError(conn net.Conn, errorMsg string) {
-	conn.Write([]byte(SerializeErrorMessage(errorMsg)))
-
+func (responseWriter *RESPResponseWriter) WriteError(writer io.Writer, errorMsg string) {
+	fmt.Fprint(writer, SerializeErrorMessage(errorMsg))
 }
