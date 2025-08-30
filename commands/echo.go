@@ -10,16 +10,14 @@ import (
 
 type EchoCommand struct{}
 
-func (cmd *EchoCommand) Execute(args []models.Message, store *store.Storage) models.Message {
-	messageBuilder := resp.NewMessageBuilder()
-
+func (cmd *EchoCommand) Execute(args []models.Message, store *store.Storage, mb *resp.MessageBuilder) models.Message {
 	if err := cmd.ValidateArgs(args); err != nil {
-		return messageBuilder.Error(err.Error()).Build()
+		return mb.Error(err.Error()).Build()
 	}
 
 	message := args[0]
 
-	return messageBuilder.BulkString(message.BulkString).Build()
+	return mb.BulkString(message.BulkString).Build()
 }
 
 func (cmd *EchoCommand) ValidateArgs(args []models.Message) error {

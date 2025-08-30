@@ -10,14 +10,13 @@ import (
 
 type PingCommand struct{}
 
-func (cmd *PingCommand) Execute(args []models.Message, store *store.Storage) models.Message {
-	messageBuilder := resp.NewMessageBuilder()
+func (cmd *PingCommand) Execute(args []models.Message, store *store.Storage, mb *resp.MessageBuilder) models.Message {
 	if err := cmd.ValidateArgs(args); err != nil {
-		return messageBuilder.Error(err.Error()).Build()
+		return mb.Error(err.Error()).Build()
 	}
 
 	if len(args) == 0 {
-		return messageBuilder.SimpleString("PONG").Build()
+		return mb.SimpleString("PONG").Build()
 	}
 
 	return args[1]

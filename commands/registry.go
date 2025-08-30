@@ -14,6 +14,7 @@ func NewCommandRegistry() *CommandRegistry {
 	registry.Register("echo", &EchoCommand{})
 	registry.Register("set", &SetCommand{})
 	registry.Register("get", &GetCommand{})
+	registry.Register("get", &GetCommand{})
 
 	return registry
 }

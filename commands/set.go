@@ -10,11 +10,9 @@ import (
 
 type SetCommand struct{}
 
-func (cmd *SetCommand) Execute(args []models.Message, store *store.Storage) models.Message {
-	messageBuilder := resp.NewMessageBuilder()
-
+func (cmd *SetCommand) Execute(args []models.Message, store *store.Storage, mb *resp.MessageBuilder) models.Message {
 	if err := cmd.ValidateArgs(args); err != nil {
-		return messageBuilder.Error(err.Error()).Build()
+		return mb.Error(err.Error()).Build()
 	}
 
 	key := args[0]
@@ -22,7 +20,7 @@ func (cmd *SetCommand) Execute(args []models.Message, store *store.Storage) mode
 
 	store.Set(string(key.BulkString), string(val.BulkString))
 
-	return messageBuilder.SimpleString("OK").Build()
+	return mb.SimpleString("OK").Build()
 }
 
 func (cmd *SetCommand) ValidateArgs(args []models.Message) error {

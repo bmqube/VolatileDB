@@ -10,18 +10,16 @@ import (
 
 type GetCommand struct{}
 
-func (cmd *GetCommand) Execute(args []models.Message, store *store.Storage) models.Message {
-	messageBuilder := resp.NewMessageBuilder()
-
+func (cmd *GetCommand) Execute(args []models.Message, store *store.Storage, mb *resp.MessageBuilder) models.Message {
 	if err := cmd.ValidateArgs(args); err != nil {
-		return messageBuilder.Error(err.Error()).Build()
+		return mb.Error(err.Error()).Build()
 	}
 
 	key := args[0]
 
 	val, _ := store.Get(string(key.BulkString))
 
-	return messageBuilder.BulkString([]byte(val)).Build()
+	return mb.BulkString([]byte(val)).Build()
 }
 
 func (cmd *GetCommand) ValidateArgs(args []models.Message) error {
