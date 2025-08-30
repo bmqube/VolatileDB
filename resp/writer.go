@@ -19,7 +19,6 @@ func NewRESPResponseWriter() *RESPResponseWriter {
 }
 
 func (responseWriter *RESPResponseWriter) WriteResponse(writer io.Writer, message models.Message) {
-	fmt.Print(Serialize(message))
 	fmt.Fprint(writer, Serialize(message))
 }
 

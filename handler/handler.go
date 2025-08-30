@@ -50,7 +50,7 @@ func (handler *ConnectionHandler) processRequest(conn net.Conn) error {
 	}
 
 	// println(len(message.Array))
-	println(message.String())
+	// println(message.String())
 	response := handler.executeCommand(message, mb)
 	handler.responseWriter.WriteResponse(conn, response)
 

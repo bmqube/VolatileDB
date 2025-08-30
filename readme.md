@@ -137,6 +137,12 @@ registry.Register("yourcommand", &YourCommand{})
 - **Memory**: All data stored in memory for maximum speed
 - **Protocol**: Efficient RESP protocol for minimal overhead
 
+## Benchmarks
+
+Performance comparison between VolatileDB and Redis:
+![Benchmark Results](benchmark.png)
+
+
 ## Limitations
 
 - **Persistence**: Data is not persisted to disk (volatile by design)

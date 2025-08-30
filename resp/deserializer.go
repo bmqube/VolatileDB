@@ -11,7 +11,6 @@ import (
 func Deserialize(reader *bytes.Reader) (models.Message, error) {
 	op, err := reader.ReadByte()
 	if err != nil {
-		println("Error reading byte:", err.Error())
 		return models.Message{}, err
 	}
 
@@ -19,7 +18,6 @@ func Deserialize(reader *bytes.Reader) (models.Message, error) {
 	case '+':
 		line, err := readLine(reader)
 		if err != nil {
-			println("Error reading simple string:", err.Error())
 			return models.Message{}, err
 		}
 
@@ -30,7 +28,6 @@ func Deserialize(reader *bytes.Reader) (models.Message, error) {
 	case '-':
 		line, err := readLine(reader)
 		if err != nil {
-			println("Error reading error string:", err.Error())
 			return models.Message{}, err
 		}
 
@@ -41,14 +38,13 @@ func Deserialize(reader *bytes.Reader) (models.Message, error) {
 	case ':':
 		line, err := readLine(reader)
 		if err != nil {
-			println("Error reading integer:", err.Error())
 			return models.Message{}, err
 		}
 
 		val, err := strconv.ParseInt(string(line), 10, 64)
 
 		if err != nil {
-			println("Error parsing int: ", err.Error())
+			return models.Message{}, err
 		}
 
 		return models.Message{
@@ -58,20 +54,17 @@ func Deserialize(reader *bytes.Reader) (models.Message, error) {
 	case '$':
 		line, err := readLine(reader)
 		if err != nil {
-			println("Error reading bulk string length:", err.Error())
 			return models.Message{}, err
 		}
 
 		length, err := strconv.ParseInt(string(line), 10, 32)
 
 		if err != nil {
-			println("Error parsing bulk_string length:", err.Error())
 			return models.Message{}, err
 		}
 
 		line, err = readLine(reader)
 		if len(line) != int(length) {
-			println("Error size mismatch in bulkstring:", err.Error())
 			return models.Message{}, err
 		}
 
@@ -82,14 +75,12 @@ func Deserialize(reader *bytes.Reader) (models.Message, error) {
 	case '*':
 		line, err := readLine(reader)
 		if err != nil {
-			println("Error reading array length:", err.Error())
 			return models.Message{}, err
 		}
 
 		length, err := strconv.ParseInt(string(line), 10, 64)
 
 		if err != nil {
-			println("Error parsing array length:", err.Error())
 			return models.Message{}, err
 		}
 
@@ -99,7 +90,6 @@ func Deserialize(reader *bytes.Reader) (models.Message, error) {
 			message, err := Deserialize(reader)
 
 			if err != nil {
-				println("Error parsing array elements:", err.Error())
 				return models.Message{}, err
 			}
 
@@ -111,7 +101,6 @@ func Deserialize(reader *bytes.Reader) (models.Message, error) {
 			Array:    messages,
 		}, nil
 	default:
-		println("Unknown RESP type:", string(op))
 		return models.Message{}, errors.New("Unknown Operation")
 	}
 }
