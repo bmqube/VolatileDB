@@ -15,6 +15,10 @@ func NewCommandRegistry() *CommandRegistry {
 	registry.Register("set", &SetCommand{})
 	registry.Register("get", &GetCommand{})
 	registry.Register("get", &GetCommand{})
+	registry.Register("incr", &IncrCommand{})
+	registry.Register("decr", &DecrCommand{})
+	registry.Register("exists", &ExistsCommand{})
+	registry.Register("del", &DelCommand{})
 
 	return registry
 }

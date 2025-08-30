@@ -3,14 +3,14 @@ package main
 import (
 	"net"
 
-	"github.com/bmqube/VolatileDB/handler"
+	"github.com/bmqube/VolatileDB/handlers"
 	"github.com/bmqube/VolatileDB/store"
 )
 
 type Server struct {
 	address string
 	store   *store.Storage
-	handler handler.ConnectionHandler
+	handler handlers.ConnectionHandler
 }
 
 func NewServer(addr string) *Server {
@@ -18,7 +18,7 @@ func NewServer(addr string) *Server {
 	return &Server{
 		address: addr,
 		store:   memStore,
-		handler: *handler.NewConnectionHandler(memStore),
+		handler: *handlers.NewConnectionHandler(memStore),
 	}
 }
 

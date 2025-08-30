@@ -16,6 +16,12 @@ A lightweight, in-memory key-value database implementation written in Go, compat
 - `ECHO <message>` - Echo back the given message
 - `SET <key> <value>` - Set a key-value pair
 - `GET <key>` - Get value by key
+- `DEL <key>` - Delete one or more keys
+- `EXISTS <key>` - Checks if a key is present
+- `INCR <key>` - Increments a stored number by one
+- `DECR <key>` - Decrements a stored number by one
+
+
 
 ## Quick Start
 
@@ -92,7 +98,11 @@ VolatileDB/
 │   ├── echo.go         # ECHO command
 │   ├── set.go          # SET command
 │   ├── get.go          # GET command
-│   └── command.go      # base command interface
+│   ├── decr.go         # DECR command
+│   ├── incr.go         # INCR command
+│   ├── del.go          # DEL command
+│   ├── exists.go       # EXISTS command
+│   └── interface.go    # base command interface
 ├── handlers/           # Connection handling
 │   └── handler.go      # TCP connection handler
 ├── models/             # Data models
