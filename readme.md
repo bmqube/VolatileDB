@@ -105,6 +105,9 @@ VolatileDB/
 │   ├── incr.go         # INCR command
 │   ├── del.go          # DEL command
 │   ├── exists.go       # EXISTS command
+│   ├── lpush.go        # LPUSH command
+│   ├── rpush.go        # RPUSH command
+│   ├── lrange.go       # LRANGE command
 │   └── interface.go    # base command interface
 ├── handlers/           # Connection handling
 │   └── handler.go      # TCP connection handler
