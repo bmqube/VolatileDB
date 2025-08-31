@@ -79,50 +79,62 @@ func (store *Storage) Set(key string, val string, expiresAt time.Time) {
 	store.mu.Lock()
 	defer store.mu.Unlock()
 
-	store.data[key] = Entry{String: val, ExpiresAt: expiresAt}
+	store.data[key] = Entry{Type: "string", String: val, ExpiresAt: expiresAt}
 }
 
-func (store *Storage) LPush(key string, val []string) int {
+func (store *Storage) LPush(key string, val []string) (int, error) {
 	store.mu.Lock()
 	defer store.mu.Unlock()
 
 	existingData, ok := store.data[key]
 	if !ok {
-		existingData = Entry{Array: make([]string, 0)}
+		existingData = Entry{Type: "array", Array: make([]string, 0)}
+	}
+
+	if existingData.Type != "array" {
+		return 0, errors.New("WRONGTYPE operation against a key holding the wrong kind of value")
 	}
 
 	existingData.Array = append(val, existingData.Array...)
 	store.data[key] = existingData
 
-	return len(existingData.Array)
+	return len(existingData.Array), nil
 }
 
-func (store *Storage) RPush(key string, val []string) int {
+func (store *Storage) RPush(key string, val []string) (int, error) {
 	store.mu.Lock()
 	defer store.mu.Unlock()
 
 	existingData, ok := store.data[key]
 	if !ok {
-		existingData = Entry{Array: make([]string, 0)}
+		existingData = Entry{Type: "array", Array: make([]string, 0)}
+	}
+
+	if existingData.Type != "array" {
+		return 0, errors.New("WRONGTYPE operation against a key holding the wrong kind of value")
 	}
 
 	existingData.Array = append(existingData.Array, val...)
 	store.data[key] = existingData
 
-	return len(existingData.Array)
+	return len(existingData.Array), nil
 }
 
-func (store *Storage) LRange(key string, start, stop int64) []string {
+func (store *Storage) LRange(key string, start, stop int64) ([]string, error) {
 	store.mu.RLock()
 	defer store.mu.RUnlock()
 
 	existingData, ok := store.data[key]
 	if !ok {
-		existingData = Entry{Array: make([]string, 0)}
+		existingData = Entry{Type: "array", Array: make([]string, 0)}
+	}
+
+	if existingData.Type != "array" {
+		return nil, errors.New("WRONGTYPE operation against a key holding the wrong kind of value")
 	}
 
 	if start >= int64(len(existingData.Array)) || start > stop {
-		return []string{}
+		return []string{}, nil
 	}
 
 	if stop >= int64(len(existingData.Array)) {
@@ -136,7 +148,7 @@ func (store *Storage) LRange(key string, start, stop int64) []string {
 		start = 0
 	}
 
-	return existingData.Array[start : stop+1]
+	return existingData.Array[start : stop+1], nil
 }
 
 func (store *Storage) Incr(key string) (int64, error) {
@@ -145,7 +157,7 @@ func (store *Storage) Incr(key string) (int64, error) {
 
 	entry, ok := store.data[key]
 	if !ok {
-		store.data[key] = Entry{String: "0"}
+		store.data[key] = Entry{Type: "string", String: "0"}
 		entry = store.data[key]
 	}
 
@@ -166,7 +178,7 @@ func (store *Storage) Decr(key string) (int64, error) {
 
 	entry, ok := store.data[key]
 	if !ok {
-		store.data[key] = Entry{String: "0"}
+		store.data[key] = Entry{Type: "string", String: "0"}
 		entry = store.data[key]
 	}
 

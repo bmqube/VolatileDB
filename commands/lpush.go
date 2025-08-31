@@ -21,7 +21,11 @@ func (cmd *LPushCommand) Execute(args []models.Message, store *store.Storage, mb
 		values[i-1] = string(args[i].BulkString)
 	}
 
-	length := store.LPush(string(key.BulkString), values)
+	length, err := store.LPush(string(key.BulkString), values)
+
+	if err != nil {
+		return mb.Error(err.Error()).Build()
+	}
 
 	return mb.Integer(int64(length)).Build()
 }

@@ -28,7 +28,10 @@ func (cmd *LRangeCommand) Execute(args []models.Message, store *store.Storage, m
 		return mb.Error("ERR value is not an integer or out of range").Build()
 	}
 
-	vals := store.LRange(key, start, stop)
+	vals, err := store.LRange(key, start, stop)
+	if err != nil {
+		return mb.Error(err.Error()).Build()
+	}
 
 	messages := make([]models.Message, len(vals))
 	for i, v := range vals {
