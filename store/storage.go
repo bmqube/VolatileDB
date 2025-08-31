@@ -112,6 +112,33 @@ func (store *Storage) RPush(key string, val []string) int {
 	return len(existingData.Array)
 }
 
+func (store *Storage) LRange(key string, start, stop int64) []string {
+	store.mu.RLock()
+	defer store.mu.RUnlock()
+
+	existingData, ok := store.data[key]
+	if !ok {
+		existingData = Entry{Array: make([]string, 0)}
+	}
+
+	if start >= int64(len(existingData.Array)) || start > stop {
+		return []string{}
+	}
+
+	if stop >= int64(len(existingData.Array)) {
+		stop = int64(len(existingData.Array))
+	}
+
+	if start < 0 && stop < 0 {
+		start = int64(len(existingData.Array)) + start
+		stop = int64(len(existingData.Array)) + stop
+	} else if start < int64(len(existingData.Array))*-1 {
+		start = 0
+	}
+
+	return existingData.Array[start : stop+1]
+}
+
 func (store *Storage) Incr(key string) (int64, error) {
 	store.mu.Lock()
 	defer store.mu.Unlock()

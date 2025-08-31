@@ -21,6 +21,7 @@ func NewCommandRegistry() *CommandRegistry {
 	registry.Register("del", &DelCommand{})
 	registry.Register("lpush", &LPushCommand{})
 	registry.Register("rpush", &RPushCommand{})
+	registry.Register("lrange", &LRangeCommand{})
 
 	return registry
 }

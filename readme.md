@@ -20,6 +20,9 @@ A lightweight, in-memory key-value database implementation written in Go, compat
 - `EXISTS <key>` - Checks if a key is present
 - `INCR <key>` - Increments a stored number by one
 - `DECR <key>` - Decrements a stored number by one
+- `LPUSH <key> element [element ...]` - insert all the values at the head of a list.
+- `RPUSH <key> element [element ...]` - insert all the values at the tail of a list.
+- `LRANGE <key> <start> <stop>` - Returns the specified elements of the list stored at key.
 
 
 
