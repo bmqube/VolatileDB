@@ -14,7 +14,7 @@ A lightweight, in-memory key-value database implementation written in Go, compat
 
 - `PING [message]` - Test server connectivity
 - `ECHO <message>` - Echo back the given message
-- `SET <key> <value>` - Set a key-value pair
+- `SET <key> <value> [EX seconds | PX milliseconds]` - Set a key-value pair (EX: expire in seconds, PX: expire in milliseconds)
 - `GET <key>` - Get value by key
 - `DEL <key>` - Delete one or more keys
 - `EXISTS <key>` - Checks if a key is present
