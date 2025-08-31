@@ -21,7 +21,8 @@ func (cmd *SetCommand) Execute(args []models.Message, store *store.Storage, mb *
 	key := args[0]
 	val := args[1]
 
-	timeToLive := time.Duration(0)
+	var expiresAt time.Time
+
 	for i := 2; i < len(args); i++ {
 		arg := args[i]
 
@@ -29,7 +30,7 @@ func (cmd *SetCommand) Execute(args []models.Message, store *store.Storage, mb *
 
 		switch comm {
 		case "ex", "px":
-			if timeToLive > time.Duration(0) {
+			if !expiresAt.IsZero() {
 				return mb.Error("ERR syntax error").Build()
 			}
 
@@ -49,16 +50,40 @@ func (cmd *SetCommand) Execute(args []models.Message, store *store.Storage, mb *
 
 			i++
 			if comm == "ex" {
-				timeToLive = time.Duration(ttl) * time.Second
+				expiresAt = time.Now().Add(time.Duration(ttl) * time.Second)
 			} else {
-				timeToLive = time.Duration(ttl) * time.Millisecond
+				expiresAt = time.Now().Add(time.Duration(ttl) * time.Millisecond)
+			}
+		case "exat", "pxat":
+			if !expiresAt.IsZero() {
+				return mb.Error("ERR syntax error").Build()
+			}
+
+			if i+1 > len(args) {
+				return mb.Error("ERR syntax error").Build()
+			}
+
+			ttl, err := strconv.ParseInt(string(args[i+1].BulkString), 10, 64)
+			if err != nil {
+				return mb.Error("ERR value is not an integer or out of range").Build()
+			}
+
+			if ttl <= 0 {
+				return mb.Error("ERR value is not an integer or out of range").Build()
+			}
+
+			i++
+			if comm == "exat" {
+				expiresAt = time.Unix(0, ttl*int64(time.Second))
+			} else {
+				expiresAt = time.Unix(0, ttl*int64(time.Millisecond))
 			}
 		default:
 			return mb.Error("ERR syntax error").Build()
 		}
 	}
 
-	store.Set(string(key.BulkString), string(val.BulkString), timeToLive)
+	store.Set(string(key.BulkString), string(val.BulkString), expiresAt)
 
 	return mb.SimpleString("OK").Build()
 }

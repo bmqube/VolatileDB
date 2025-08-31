@@ -15,17 +15,15 @@ func (cmd *DelCommand) Execute(args []models.Message, store *store.Storage, mb *
 		return mb.Error(err.Error()).Build()
 	}
 
-	var ok bool = false
+	cnt := int64(0)
 
 	for _, key := range args {
-		ok = store.Del(string(key.BulkString)) || ok
+		if store.Del(string(key.BulkString)) {
+			cnt++
+		}
 	}
 
-	if !ok {
-		return mb.Integer(0).Build()
-	}
-
-	return mb.Integer(1).Build()
+	return mb.Integer(cnt).Build()
 }
 
 func (cmd *DelCommand) ValidateArgs(args []models.Message) error {

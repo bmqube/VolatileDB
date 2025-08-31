@@ -59,12 +59,12 @@ func (store *Storage) Get(key string) (string, bool) {
 	defer store.mu.RUnlock()
 	entry, ok := store.data[key]
 
-	if ok && !entry.ExpiresAt.IsZero() && time.Now().After(entry.ExpiresAt) {
-		store.mu.Lock()
-		delete(store.data, key)
-		store.mu.Unlock()
-		ok = false
-	}
+	// if ok && !entry.ExpiresAt.IsZero() && time.Now().After(entry.ExpiresAt) {
+	// 	store.mu.Lock()
+	// 	delete(store.data, key)
+	// 	store.mu.Unlock()
+	// 	ok = false
+	// }
 
 	if !ok {
 		return "", false
@@ -73,14 +73,9 @@ func (store *Storage) Get(key string) (string, bool) {
 	return entry.Value, true
 }
 
-func (store *Storage) Set(key string, val string, ttl time.Duration) {
+func (store *Storage) Set(key string, val string, expiresAt time.Time) {
 	store.mu.Lock()
 	defer store.mu.Unlock()
-
-	var expiresAt time.Time
-	if ttl > 0 {
-		expiresAt = time.Now().Add(ttl)
-	}
 
 	store.data[key] = Entry{Value: val, ExpiresAt: expiresAt}
 }
