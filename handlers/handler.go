@@ -70,11 +70,20 @@ func (handler *ConnectionHandler) executeCommand(message models.Message, mb *res
 	command := strings.ToLower(string(temp.BulkString))
 	executor, ok := handler.commandRegistry.Get(command)
 
-	if !ok {
-		return mb.Error("ERR unknown command '" + command + "', with args beginning with: '" + command + "'").Build()
-	}
-
 	args := message.Array[1:]
+
+	if !ok {
+		stringifiedArgs := ""
+		for _, b := range args {
+			stringifiedArgs += "'" + string(b.BulkString) + "' "
+		}
+
+		if stringifiedArgs == "" {
+			stringifiedArgs = command
+		}
+
+		return mb.Error("ERR unknown command '" + command + "', with args beginning with: " + stringifiedArgs).Build()
+	}
 
 	if err := executor.ValidateArgs(args); err != nil {
 		return mb.Error(err.Error()).Build()

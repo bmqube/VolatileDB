@@ -19,6 +19,8 @@ func NewCommandRegistry() *CommandRegistry {
 	registry.Register("decr", &DecrCommand{})
 	registry.Register("exists", &ExistsCommand{})
 	registry.Register("del", &DelCommand{})
+	registry.Register("lpush", &LPushCommand{})
+	registry.Register("rpush", &RPushCommand{})
 
 	return registry
 }

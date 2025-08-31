@@ -13,7 +13,9 @@ type Storage struct {
 }
 
 type Entry struct {
-	Value     string
+	Type      string
+	String    string
+	Array     []string
 	ExpiresAt time.Time
 }
 
@@ -70,14 +72,44 @@ func (store *Storage) Get(key string) (string, bool) {
 		return "", false
 	}
 
-	return entry.Value, true
+	return entry.String, true
 }
 
 func (store *Storage) Set(key string, val string, expiresAt time.Time) {
 	store.mu.Lock()
 	defer store.mu.Unlock()
 
-	store.data[key] = Entry{Value: val, ExpiresAt: expiresAt}
+	store.data[key] = Entry{String: val, ExpiresAt: expiresAt}
+}
+
+func (store *Storage) LPush(key string, val []string) int {
+	store.mu.Lock()
+	defer store.mu.Unlock()
+
+	existingData, ok := store.data[key]
+	if !ok {
+		existingData = Entry{Array: make([]string, 0)}
+	}
+
+	existingData.Array = append(val, existingData.Array...)
+	store.data[key] = existingData
+
+	return len(existingData.Array)
+}
+
+func (store *Storage) RPush(key string, val []string) int {
+	store.mu.Lock()
+	defer store.mu.Unlock()
+
+	existingData, ok := store.data[key]
+	if !ok {
+		existingData = Entry{Array: make([]string, 0)}
+	}
+
+	existingData.Array = append(existingData.Array, val...)
+	store.data[key] = existingData
+
+	return len(existingData.Array)
 }
 
 func (store *Storage) Incr(key string) (int64, error) {
@@ -86,17 +118,17 @@ func (store *Storage) Incr(key string) (int64, error) {
 
 	entry, ok := store.data[key]
 	if !ok {
-		store.data[key] = Entry{Value: "0"}
+		store.data[key] = Entry{String: "0"}
 		entry = store.data[key]
 	}
 
-	intVal, err := strconv.ParseInt(entry.Value, 10, 64)
+	intVal, err := strconv.ParseInt(entry.String, 10, 64)
 	if err != nil {
 		return 0, errors.New("ERR value is not an integer or out of range")
 	}
 
 	intVal++
-	store.data[key] = Entry{Value: strconv.FormatInt(intVal, 10)}
+	store.data[key] = Entry{String: strconv.FormatInt(intVal, 10)}
 
 	return intVal, nil
 }
@@ -107,17 +139,17 @@ func (store *Storage) Decr(key string) (int64, error) {
 
 	entry, ok := store.data[key]
 	if !ok {
-		store.data[key] = Entry{Value: "0"}
+		store.data[key] = Entry{String: "0"}
 		entry = store.data[key]
 	}
 
-	intVal, err := strconv.ParseInt(entry.Value, 10, 64)
+	intVal, err := strconv.ParseInt(entry.String, 10, 64)
 	if err != nil {
 		return 0, errors.New("ERR value is not an integer or out of range")
 	}
 
 	intVal--
-	store.data[key] = Entry{Value: strconv.FormatInt(intVal, 10)}
+	store.data[key] = Entry{String: strconv.FormatInt(intVal, 10)}
 
 	return intVal, nil
 }
